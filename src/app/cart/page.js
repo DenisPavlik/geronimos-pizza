@@ -114,8 +114,8 @@ export default function CartPage() {
             </div>
           </div>
         </div>
-        <div className="bg-gray-100p-4 rounded-lg">
-          <h2>Checkout</h2>
+        <div className="bg-gray-100 p-4 rounded-lg">
+          <h2 className="font-josefin text-xl font-semibold mb-4 text-gray-700">Checkout</h2>
           <form onSubmit={proceedToCheckout}>
             <AddressInputs
               addressProps={address}

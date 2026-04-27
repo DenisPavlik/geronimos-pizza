@@ -4,8 +4,8 @@ import { cartProductPrice } from "../AppContext";
 
 export default function CartProduct({ product, index, onRemove }) {
   return (
-    <div className="flex items-center gap-4 border-b py-4">
-      <div className="w-24">
+    <div className="flex items-center gap-2 sm:gap-4 border-b py-4">
+      <div className="w-16 sm:w-24 shrink-0">
         <Image src={product.image} alt="product" width={240} height={240} />
       </div>
       <div className="grow">

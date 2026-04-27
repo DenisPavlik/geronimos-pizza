@@ -34,7 +34,7 @@ export default function RootLayout({ children }) {
             <Header />
             <div className="min-h-[70vh]">{children}</div>
             <footer className="border-t p-8 text-center text-gray-500 mt-16 font-josefin">
-              &copy; 2025 All rights reserved
+              &copy; {new Date().getFullYear()} All rights reserved
             </footer>
           </main>
         </Providers>

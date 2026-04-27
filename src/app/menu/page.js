@@ -2,6 +2,7 @@
 import SectionHeaders from "@/components/layout/SectionHeaders";
 import MenuItem from "@/components/menu/MenuItem";
 import Preloader from "@/components/Preloader";
+import FadeIn from "@/components/layout/FadeIn";
 import { useEffect, useState } from "react";
 
 export default function MenuPage() {
@@ -23,14 +24,14 @@ export default function MenuPage() {
             <div className="text-center">
               <SectionHeaders mainHeader={c.name} />
             </div>
-            <div className="grid sm:grid-cols-3 gap-4 mt-6 mb-12">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6 mb-12">
               {menuItems?.length > 0 ?
                 menuItems
                   .filter((item) => item.category === c._id)
-                  .map((item) => (
-                    <div key={item._id}>
+                  .map((item, index) => (
+                    <FadeIn key={item._id} delay={index * 80} className="h-full">
                       <MenuItem {...item} />
-                    </div>
+                    </FadeIn>
                   )) : <Preloader />}
             </div>
           </div>

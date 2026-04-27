@@ -3,7 +3,8 @@ import Image from "next/image";
 import MenuItem from "../menu/MenuItem";
 import SectionHeaders from "./SectionHeaders";
 import { useEffect, useState } from "react";
-import Preloader from '@/components/Preloader'
+import Preloader from '@/components/Preloader';
+import FadeIn from "@/components/layout/FadeIn";
 
 export default function HomeMenu() {
   const [bestSelleers, setBestSellers] = useState([]);
@@ -43,7 +44,11 @@ export default function HomeMenu() {
       {bestSelleers?.length > 0 ? (
         <div className="grid sm:grid-cols-3 gap-4">
           {bestSelleers?.length > 0 &&
-            bestSelleers.map((item) => <MenuItem key={item._id} {...item} />)}
+            bestSelleers.map((item, index) => (
+              <FadeIn key={item._id} delay={index * 80} className="h-full">
+                <MenuItem {...item} />
+              </FadeIn>
+            ))}
         </div>
       ) : (
         <Preloader />
