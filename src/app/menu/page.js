@@ -9,10 +9,10 @@ export default function MenuPage() {
   const [categories, setCategories] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   useEffect(() => {
-    fetch("api/categories").then((res) => {
+    fetch("/api/categories").then((res) => {
       res.json().then((categories) => setCategories(categories));
     });
-    fetch("api/menu-items").then((res) => {
+    fetch("/api/menu-items").then((res) => {
       res.json().then((menuItems) => setMenuItems(menuItems));
     });
   }, []);

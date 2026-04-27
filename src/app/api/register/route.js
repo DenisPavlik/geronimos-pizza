@@ -2,15 +2,22 @@ import { User } from "@/models/User";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export async function POST(req) {
   await mongoose.connect(process.env.MONGODB_URI);
   const body = await req.json();
   const pass = body.password;
 
+  if (!body.email || !EMAIL_RE.test(body.email)) {
+    return new Response(JSON.stringify({ error: "Invalid email address" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   if (!pass || pass.length < 5) {
-    return new Response(JSON.stringify({
-      error: "Password must be at least 5 characters",
-    }), {
+    return new Response(JSON.stringify({ error: "Password must be at least 5 characters" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });
@@ -26,11 +33,15 @@ export async function POST(req) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    if (err.code === 11000) {
+      return new Response(JSON.stringify({ error: "Email already registered" }), {
+        status: 409,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    return new Response(JSON.stringify({ error: "Something went wrong" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }
-
-  // return Response.json(createdUser);
 }

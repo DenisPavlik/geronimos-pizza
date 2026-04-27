@@ -51,30 +51,20 @@ export default function CartPage() {
 
   async function proceedToCheckout(ev) {
     ev.preventDefault();
-    const promise = new Promise(async (resolve, reject) => {
-      fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          address,
-          cartProducts,
-        }),
-      }).then(async (responce) => {
-        if (responce.ok) {
-          resolve();
-          window.location = await responce.json();
-        } else {
-          reject();
-        }
-      })
-    })
+    const promise = fetch("/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address, cartProducts }),
+    }).then(async (response) => {
+      if (!response.ok) throw new Error("Checkout failed");
+      window.location = await response.json();
+    });
 
     await toast.promise(promise, {
-      loading:"Prepearing your order...",
-      success:"Redirecting to payment...",
-      error:"Something went wrong... Pleace try again later"
-    })
-    
+      loading: "Preparing your order...",
+      success: "Redirecting to payment...",
+      error: "Something went wrong... Please try again later",
+    });
   }
 
   if (cartProducts?.length === 0) {

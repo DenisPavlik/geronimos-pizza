@@ -21,7 +21,6 @@ export const authOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -34,67 +33,29 @@ export const authOptions = {
         },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
-        if (!credentials) {
-          console.log("❌ No credentials received");
-          return null;
-        }
+      async authorize(credentials) {
+        if (!credentials) return null;
 
         const email = credentials?.email;
         const password = credentials?.password;
 
-        console.log("📥 Login attempt:", { email, password });
-
         try {
           await mongoose.connect(process.env.MONGODB_URI);
-        } catch (err) {
-          console.log("❌ Failed to connect to MongoDB", err);
+        } catch {
           return null;
         }
 
         const user = await User.findOne({ email });
-
-        if (!user) {
-          console.log("❌ User not found for email:", email);
-          return null;
-        }
-
-        console.log("🔐 Checking password for user:", user.email);
-        console.log("Stored password hash:", user.password);
-
-        // const passwordOk = user && bcrypt.compareSync(password, user.password);
-
-        if (!process.env.MONGODB_URI)
-          throw new Error("MONGODB_URI not defined");
-
-        // if (passwordOk) {
-        //   return user;
-        // }
-
-        // return null;
+        if (!user) return null;
 
         const passwordOk = bcrypt.compareSync(password, user.password);
+        if (!passwordOk) return null;
 
-        if (!passwordOk) {
-          console.log("❌ Invalid password");
-          return null;
-        }
-
-        console.log("✅ Login successful:", user.email);
-        if (passwordOk) {
-          console.log("✅ Login successful:", user.email);
-          console.log("✅ Returning user:", {
-            id: user._id.toString(),
-            email: user.email,
-            name: user.name || user.email,
-          });
-        
-          return {
-            id: user._id.toString(),
-            email: user.email,
-            name: user.name || user.email,
-          };
-        }
+        return {
+          id: user._id.toString(),
+          email: user.email,
+          name: user.name || user.email,
+        };
       },
     }),
   ],

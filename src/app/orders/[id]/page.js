@@ -12,22 +12,29 @@ export default function OrderPage() {
   const [loadingOrder, setLoadingOrder] = useState(true)
   const { clearCart } = useContext(CartContext);
   const { id } = useParams();
+
+  // Runs once on mount — clears cart if redirected here after successful payment.
+  // clearCart is excluded from deps intentionally: it has no useCallback wrapper
+  // in AppContext, so its reference changes on every render. Including it would
+  // cause this effect to re-run in a loop every time the cart state updates.
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (window.location.href.includes("clear-cart=1")) {
-        clearCart();
-      }
+    if (window.location.href.includes("clear-cart=1")) {
+      clearCart();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (id) {
-      setLoadingOrder(true)
+      setLoadingOrder(true);
       fetch("/api/orders?_id=" + id).then((res) => {
         res.json().then((orderData) => {
-          setOrder(orderData)
-          setLoadingOrder(false)
+          setOrder(orderData);
+          setLoadingOrder(false);
         });
       });
     }
-  }, [id, clearCart]);
+  }, [id]);
 
   let subtotal = 0;
   if (order?.cartProducts) {

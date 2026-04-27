@@ -23,7 +23,8 @@ export default function MenuItemForm({ onSubmit, menuItem }) {
         }
       })
     );
-  }, [category]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <form

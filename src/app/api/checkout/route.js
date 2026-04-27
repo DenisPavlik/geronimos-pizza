@@ -6,28 +6,26 @@ import { authOptions } from "@/libs/authOptions";
 const stripe = require("stripe")(process.env.STRIPE_SK);
 
 export async function POST(req) {
-  mongoose.connect(process.env.MONGODB_URI);
+  await mongoose.connect(process.env.MONGODB_URI);
 
   const { cartProducts, address } = await req.json();
   const session = await getServerSession(authOptions);
   const userEmail = session?.user?.email;
 
-  const orderDoc = await Order.create({
-    userEmail,
-    ...address,
-    cartProducts,
-    paid: false,
-  });
-
   const stripeLineItems = [];
   for (const cartProduct of cartProducts) {
     const productInfo = await MenuItem.findById(cartProduct._id);
+    if (!productInfo) {
+      continue;
+    }
     let productPrice = productInfo.basePrice;
     if (cartProduct.size) {
       const size = productInfo.sizes.find(
         (size) => size._id.toString() === cartProduct.size._id.toString()
       );
-      productPrice += size.price;
+      if (size) {
+        productPrice += size.price;
+      }
     }
     if (cartProduct.extras?.length > 0) {
       for (const cartProductExtraThing of cartProduct.extras) {
@@ -35,7 +33,9 @@ export async function POST(req) {
           (extra) =>
             extra._id.toString() === cartProductExtraThing._id.toString()
         );
-        productPrice += extraThingInfo.price;
+        if (extraThingInfo) {
+          productPrice += extraThingInfo.price;
+        }
       }
     }
 
@@ -53,6 +53,11 @@ export async function POST(req) {
     });
   }
 
+  // Pre-generate the order ID so it can be referenced in Stripe metadata
+  // before the Order document is written to the database.
+  // This ensures no Order is created if Stripe session creation fails.
+  const orderId = new mongoose.Types.ObjectId();
+
   const stripeSession = await stripe.checkout.sessions.create({
     line_items: stripeLineItems,
     mode: "payment",
@@ -60,10 +65,10 @@ export async function POST(req) {
     success_url:
       process.env.NEXTAUTH_URL +
       "orders/" +
-      orderDoc._id.toString() +
+      orderId.toString() +
       "?clear-cart=1",
     cancel_url: process.env.NEXTAUTH_URL + "cart?canceled=1",
-    metadata: { orderId: orderDoc._id.toString() },
+    metadata: { orderId: orderId.toString() },
     shipping_options: [
       {
         shipping_rate_data: {
@@ -73,6 +78,14 @@ export async function POST(req) {
         },
       },
     ],
+  });
+
+  await Order.create({
+    _id: orderId,
+    userEmail,
+    ...address,
+    cartProducts,
+    paid: false,
   });
 
   return Response.json(stripeSession.url);
