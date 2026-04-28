@@ -18,18 +18,34 @@ export function cartProductPrice(cartProduct) {
   return price;
 }
 
+const CART_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
 export function AppProvider({ children }) {
   const [cartProducts, setCartProducts] = useState([]);
   const ls = typeof window !== "undefined" ? window.localStorage : null;
 
   useEffect(() => {
-    if (ls && ls.getItem("cart"))
-      setCartProducts(JSON.parse(ls.getItem("cart")));
+    if (!ls) return;
+    const raw = ls.getItem("cart");
+    if (!raw) return;
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        // Legacy format — load as-is, will migrate to new format on next save
+        setCartProducts(parsed);
+      } else if (parsed?.items && Date.now() - parsed.savedAt <= CART_TTL_MS) {
+        setCartProducts(parsed.items);
+      } else {
+        ls.removeItem("cart");
+      }
+    } catch {
+      ls.removeItem("cart");
+    }
   }, [ls]);
 
   function saveCartProductsToLocalStorage(cartProducts) {
     if (ls) {
-      ls.setItem("cart", JSON.stringify(cartProducts));
+      ls.setItem("cart", JSON.stringify({ items: cartProducts, savedAt: Date.now() }));
     }
   }
 

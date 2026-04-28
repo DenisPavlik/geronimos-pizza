@@ -7,7 +7,7 @@ import Youtube from "@/components/icons/Youtube";
 export default function ContactPage() {
   return (
     <section className="my-8">
-      <div className="mt-16 flex flex-col md:flex-row gap-10">
+      <div className="mt-8 md:mt-16 flex flex-col md:flex-row gap-10">
         <div className="flex flex-col gap-4">
           <div className="my-2">
             <h2 className="font-josefin text-center text-3xl font-bold text-gray-500 mb-4">
@@ -85,7 +85,7 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-        <div className="w-full md:min-h-[600px] rounded-lg overflow-hidden">
+        <div className="w-full h-[400px] md:h-[600px] rounded-lg overflow-hidden">
           <iframe
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5103.879963195662!2d-73.96668661501086!3d40.782241890556364!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2589a018531e3%3A0xb9df1f7387a94119!2z0KbQtdC90YLRgNCw0LvRjNC90LjQuSDQv9Cw0YDQug!5e0!3m2!1suk!2sus!4v1745429918013!5m2!1suk!2sus"
             width="100%"

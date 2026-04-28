@@ -17,7 +17,7 @@ export default function OrdersPage() {
 
   function fetchOrders() {
     setLoadingOrders(true);
-    fetch("api/orders").then((res) => {
+    fetch("/api/orders").then((res) => {
       res.json().then((orders) => {
         setOrders(orders.reverse());
         setLoadingOrders(false);

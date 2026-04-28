@@ -4,7 +4,6 @@ import toast from "react-hot-toast";
 export default function EditableImage({ link, setLink }) {
   async function handleFileChange(ev) {
     const files = ev.target.files;
-    console.log(ev);
     if (files?.length === 1) {
       const data = new FormData();
       data.set("file", files[0]);

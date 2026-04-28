@@ -1,14 +1,21 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import uniqid from "uniqid";
 
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/avif"];
+const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+
 export async function POST(req) {
   const data = await req.formData();
   if (data.get("file")) {
-    // console.log('We have a file', data.get('file'));
-
-    //upload file
-
     const file = data.get("file");
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return Response.json({ error: "Only image files are allowed" }, { status: 400 });
+    }
+
+    if (file.size > MAX_SIZE_BYTES) {
+      return Response.json({ error: "File size must not exceed 5 MB" }, { status: 400 });
+    }
 
     const s3Client = new S3Client({
       region: "us-east-1",
