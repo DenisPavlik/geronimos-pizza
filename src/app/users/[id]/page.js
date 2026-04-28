@@ -21,28 +21,28 @@ export default function EditUserPage() {
 
   async function handleSaveButtonClick(ev, data) {
     ev.preventDefault();
-    const promise = new Promise(async (resolve, reject)=>{
+    const promise = new Promise(async (resolve, reject) => {
       const response = await fetch('/api/profile', {
         method: "PUT",
-        headers: {'Content-Type' : "application.json"},
+        headers: {'Content-Type': "application/json"},
         body: JSON.stringify({...data, _id: id})
-      })
+      });
       if (response.ok) resolve();
       else reject();
+    });
 
-      await toast.promise(promise, {
-        loading: "Saving user...",
-        success: 'User saved',
-        error: 'An error has occured while saving the user'
-      })
-    })
+    await toast.promise(promise, {
+      loading: "Saving user...",
+      success: 'User saved',
+      error: 'An error has occured while saving the user'
+    });
   }
 
   if (loading) {
     return "Loading user...";
   }
 
-  if (!data.admin) {
+  if (!data?.admin) {
     return "Not an admin";
   }
 

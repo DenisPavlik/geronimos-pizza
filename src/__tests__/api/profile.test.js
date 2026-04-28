@@ -88,15 +88,13 @@ describe('GET /api/profile', () => {
     })
   })
 
-  // The route returns {} with 200 when there is no session — it does NOT return 401.
-  // Only PUT returns 401 for unauthenticated requests.
-  it('returns 200 with empty object (not 401) when there is no session', async () => {
+  it('returns 401 when there is no session', async () => {
     getServerSession.mockResolvedValue(null)
 
     const res = await GET(makeGetRequest())
 
-    expect(res.status).toBe(200)
-    expect(await res.json()).toEqual({})
+    expect(res.status).toBe(401)
+    expect(await res.json()).toMatchObject({ error: 'Unauthorized' })
   })
 
   it('returns user by _id without requiring a session', async () => {

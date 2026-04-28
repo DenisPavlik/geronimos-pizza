@@ -50,7 +50,7 @@ export async function GET(req) {
     const email = session?.user?.email;
 
     if (!email) {
-      return Response.json({});
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
     filterUser = { email };
   }
