@@ -6,7 +6,7 @@ A full-stack pizza ordering web application built with Next.js 14, featuring rea
 
 ## Live Demo
 
-> [https://denys-pizza-app.vercel.app](https://geronimos-pizza.vercel.app)
+> [https://geronimos-pizza.vercel.app](https://geronimos-pizza.vercel.app)
 
 ---
 
